@@ -125,7 +125,7 @@ def main(base, out, cands):
         data = json.load(open(path))
         won = 0
         for key, rec in data.items():
-            n = int(key)
+            n = int(key.rstrip("_"))
             if n > MAX_SOURCE_N or len(rec["squares"]) != n:
                 continue
             g = frame(n, normalize(rec["squares"]))
@@ -146,6 +146,7 @@ def main(base, out, cands):
     sub = pd.concat(parts, ignore_index=True)
     sub.insert(0, "id", range(len(sub)))
     sub.to_csv(out, index=False)
+    json.dump({n: [best[n][0], best[n][2]] for n in sorted(best)}, open(out + ".sources.json", "w"), indent=0)
     total = sum(best[n][0] / math.sqrt(n) - 1 for n in best)
     total += sum(math.ceil(math.sqrt(n)) / math.sqrt(n) - 1 for n in range(1, 1001) if n not in best)
     print(f"expected score: {total:.6f}")

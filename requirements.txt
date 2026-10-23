@@ -2,3 +2,6 @@ numpy
 pandas
 mpmath
 kaggle
+pyyaml
+torch
+scipy
