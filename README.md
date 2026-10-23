@@ -14,6 +14,7 @@ Code for <https://www.kaggle.com/competitions/squares-in-squares>: pack n unit s
 | `parse_witnesses.py` | Converts `jlevy/squares` witness YAMLs (corners / center-basis / center-angle) into `cands/jlevy.json`. |
 | `families.py` | Closed-form Göbel-square packings (45° b×b block + four staircases). |
 | `merge.py` | Merges a base CSV with candidate JSONs, keeps the smallest valid side per n, then alternates L-extension (grow side by m, fill the L strip with grid squares) and drop-a-square (s(n) ≤ s(n+1)) passes. Writes `<out>.sources.json`. |
+| `fault_dp.py` | v3: fault-line gadget composition. Crops every known packing into rectangular gadgets (w×h footprint, w·h+Δ squares, bloat f) via order statistics over 8 symmetries, runs a DP over chains of up to 5 gadgets along a staircase fault (modes X / Y / 0), then builds and strictly verifies each K×K + f packing. |
 | `optimizer.py` | Local compaction: shrink the box, minimize squared SAT penetration + wall violation with L-BFGS, basin-hopping kicks, strict legalization. |
 | `metric/metric.py` | Official competition metric v17 (sha256 `312458…9733`), for scoring locally exactly as Kaggle does. |
 | `check_submission.py` | Local feasibility check (strict SAT gaps) + expected score. |
@@ -29,6 +30,10 @@ python -m venv .venv && .venv/bin/pip install -r requirements.txt
 mkdir -p refs/svg  # download record SVGs from https://kingbird.myphotos.cc/packing/squares_in_squares.html
 .venv/bin/python parse_records.py refs/svg cands/records.json
 .venv/bin/python merge.py submission.csv submission_v2.csv cands/records.json
+.venv/bin/python parse_certs.py refs/square-packing/certificates/best cands/couzo.json
+.venv/bin/python parse_certs.py refs/square-packing/certificates/best cands/couzo_big.json 3600 1101
+.venv/bin/python fault_dp.py submission_v2.csv cands/fault4.json --donors cands/couzo.json cands/couzo_big.json --rounds 4 --kmin 4
+.venv/bin/python merge.py submission_v2.csv submission_v3.csv cands/fault4.json
 .venv/bin/kaggle competitions submit -c squares-in-squares -f submission_v2.csv -m "..."
 ```
 
@@ -38,6 +43,7 @@ mkdir -p refs/svg  # download record SVGs from https://kingbird.myphotos.cc/pack
 |---|---|
 | v1 grid + diagonal strip | 24.02152 |
 | v2 + Ellsworth records, Göbel squares, Couzo certificates, L-extension/drop | 22.64887 |
+| v3 + fault-line gadget DP (234 compositions), re-run L-extension/drop | 22.50447 |
 
 ## References (local, git-ignored under `refs/`)
 

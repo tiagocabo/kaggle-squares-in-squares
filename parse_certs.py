@@ -36,11 +36,11 @@ def parse(path):
     return n, side, sq
 
 
-def main(cert_dir, out):
+def main(cert_dir, out, max_n=MAX_SOURCE_N, min_n=0):
     res = {}
     for p in sorted(Path(cert_dir).glob("n*.cert")):
         m = re.match(r"n(\d+)$", p.stem)
-        if not m or int(m.group(1)) > MAX_SOURCE_N:
+        if not m or not (min_n <= int(m.group(1)) <= max_n):
             continue
         n, side, sq = parse(p)
         res[n] = {"side": mpmath.nstr(side, 40),
@@ -50,4 +50,4 @@ def main(cert_dir, out):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2])
+    main(sys.argv[1], sys.argv[2], *map(int, sys.argv[3:5]))
