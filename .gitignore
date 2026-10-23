@@ -7,3 +7,5 @@ __pycache__/
 submission_details.csv
 metric/submission_details.csv
 metric/__pycache__/
+*.log
+*.sources.json
