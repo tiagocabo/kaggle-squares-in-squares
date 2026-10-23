@@ -1,0 +1,7 @@
+# large / regenerable artifacts
+*.csv
+refs/
+cands/
+.venv/
+__pycache__/
+submission_details.csv
